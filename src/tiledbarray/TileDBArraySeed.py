@@ -10,6 +10,7 @@ from delayedarray import (
     extract_sparse_array,
     is_masked,
     is_sparse,
+    to_dense_array,
     wrap,
 )
 
@@ -51,7 +52,7 @@ class TileDbArraySeed:
         _all_dimnames = []
         _all_dimnames_tile = []
         for i in range(_schema.domain.ndim):
-            _dim = _schema.attr(i)
+            _dim = _schema.domain.dim(i)
             _all_dimnames.append(_dim.name)
             _all_dimnames_tile.append(_dim.tile)
 
@@ -130,29 +131,41 @@ def is_masked_TileDbArraySeed(x: TileDbArraySeed):
     return False
 
 
-def _extract_array(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]):
+def _sanitize_subset(subset, dimlength):
+    if isinstance(subset, slice):
+        if subset == slice(None):
+            subset = slice(dimlength)
 
-    _first_subset = subset[0]
-    if _first_subset == slice(None):
-        _first_subset = slice(x._shape[0])
+        subset = list(range(*subset.indices(dimlength)))
+    elif isinstance(subset, range):
+        subset = list(subset)
+
+    return subset
+
+
+def _extract_array(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]):
+    """Extract slices from a TileDB Array."""
+    _parsed_subset = []
+
+    _first_subset = _sanitize_subset(subset[0], x._shape[0])
+    _parsed_subset.append(_first_subset)
 
     _second_subset = slice(x._shape[1])
     if len(subset) > 1:
-        _second_subset = subset[1]
-        if _second_subset == slice(None):
-            _second_subset = slice(x._shape[1])
+        _second_subset = _sanitize_subset(subset[1], x._shape[1])
+        _parsed_subset.append(_second_subset)
 
     with tiledb.open(x._path, "r") as mat:
-        _data = mat.multi_index[subset]
-        if x.is_sparse:
+        _data = mat.multi_index[tuple(_parsed_subset)]
+        if x.is_sparse is True:
             output = numpy.zeros(
-                (len(_first_subset), len(_second_subset)), dtype=x.dtype, order="F"
+                (max(_first_subset), max(_second_subset)), dtype=x.dtype, order="F"
             )
 
             for idx, ival in enumerate(_data[x._name]):
-                output[_data[x._dimnames[0]][idx], _data[x._dimnames[0]][idx][1]] = ival
+                output[_data[x._dimnames[0]][idx], _data[x._dimnames[1]][idx]] = ival
 
-            return output
+            return (len(_first_subset), len(_second_subset)), output
 
         return (len(_first_subset), len(_second_subset)), numpy.array(_data[x._name])
 
@@ -163,7 +176,7 @@ def extract_dense_array_TileDbArraySeed(
 ) -> numpy.ndarray:
     """See :py:meth:`~delayedarray.extract_dense_array.extract_dense_array`.
 
-    subset parameter is passed to tiledb's
+    Subset parameter is passed to tiledb's
     `multi_index operation <https://tiledb-inc-tiledb.readthedocs-hosted.com/projects/tiledb-py/en/stable/python-api.html#tiledb.libtiledb.Array.multi_index>`__.
     """
     _, _output = _extract_array(x, subset)
@@ -176,10 +189,13 @@ def extract_sparse_array_TileDbArraySeed(
 ) -> SparseNdarray:
     """See :py:meth:`~delayedarray.extract_sparse_array.extract_sparse_array`.
 
-    subset parameter is passed to tiledb's
+    Subset parameter is passed to tiledb's
     `multi_index operation <https://tiledb-inc-tiledb.readthedocs-hosted.com/projects/tiledb-py/en/stable/python-api.html#tiledb.libtiledb.Array.multi_index>`__.
     """
     _subset, _output = _extract_array(x, subset)
+
+    print(_subset)
+    print(_output)
 
     return SparseNdarray(
         shape=_subset,
