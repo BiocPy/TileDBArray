@@ -142,7 +142,7 @@ def _sanitize_subset(subset, dimlength):
     elif isinstance(subset, range):
         subset = list(subset)
 
-    return subset
+    return sorted(subset)
 
 
 def _extract_array(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]):
