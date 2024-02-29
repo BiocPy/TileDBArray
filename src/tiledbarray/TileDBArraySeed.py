@@ -187,15 +187,19 @@ def extract_dense_array_TileDbArraySeed(
 
 def _SparseNdarray_contents_from_coordinates(rows, cols, vals, shape, val_dtype):
     output = [None] * shape[-1]
+    _min_col = min(cols)
+    _min_row = min(rows)
     for i, val in enumerate(vals):
-        if output[cols[i]] is None:
-            output[cols[i]] = [
+        _offset_col = cols[i] - _min_col
+        _offset_row = rows[i] - _min_row
+        if output[_offset_col] is None:
+            output[_offset_col] = [
                 numpy.array([], dtype=numpy.int32),
                 numpy.array([], dtype=val_dtype),
             ]
 
-        output[cols[i]][0] = numpy.append(output[cols[i]][0], rows[i])
-        output[cols[i]][1] = numpy.append(output[cols[i]][1], val)
+        output[_offset_col][0] = numpy.append(output[_offset_col][0], _offset_row)
+        output[_offset_col][1] = numpy.append(output[_offset_col][1], val)
 
     for i, o in enumerate(output):
         if o is not None:
