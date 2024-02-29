@@ -34,7 +34,7 @@ We can now represent it as a `TileDbArray`:
 
 ```python
 import tiledbarray
-arr = tiledbarray.TileDbArray("whee.h5", attribute_name="")
+arr = tiledbarray.TileDbArray("dense.tiledb", attribute_name="")
 # <40 x 50> TileDbArray object of type 'float64'
 # [[0.96316214, 0.90187013, 0.55767551, ..., 0.81663263, 0.57660051,
 #   0.3986336 ],
@@ -100,7 +100,7 @@ We can now represent this as a `TileDbArray`:
 
 ```python
 import tiledbarray
-arr = tiledbarray.TileDbArray(dir, attribute_name="")
+arr = tiledbarray.TileDbArray(dir_path, attribute_name="")
 
 slices = (slice(0,3), [2, 4])
 
