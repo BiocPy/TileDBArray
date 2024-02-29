@@ -165,8 +165,7 @@ def _extract_array(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]):
                 _data[x._dimnames[0]],
                 _data[x._dimnames[1]],
                 _data[x._attribute_name],
-                min(_first_subset),
-                min(_second_subset),
+                _parsed_subset,
             )
 
         return (len(_first_subset), len(_second_subset)), numpy.array(
@@ -188,22 +187,20 @@ def extract_dense_array_TileDbArraySeed(
 
 
 def _SparseNdarray_contents_from_coordinates(
-    rows, cols, vals, shape, val_dtype, offset_row, offset_col
+    rows, cols, vals, shape, val_dtype, parsed_subset
 ):
     output = [None] * shape[-1]
     for i, val in enumerate(vals):
-        if output[cols[i] - offset_col] is None:
-            output[cols[i] - offset_col] = [
+        _offset_col = parsed_subset[1].index(cols[i])
+        _offset_row = parsed_subset[0].index(rows[i])
+        if output[_offset_col] is None:
+            output[_offset_col] = [
                 numpy.array([], dtype=numpy.int32),
                 numpy.array([], dtype=val_dtype),
             ]
 
-        output[cols[i] - offset_col][0] = numpy.append(
-            output[cols[i] - offset_col][0], rows[i] - offset_row
-        )
-        output[cols[i] - offset_col][1] = numpy.append(
-            output[cols[i] - offset_col][1], val
-        )
+        output[_offset_col][0] = numpy.append(output[_offset_col][0], _offset_row)
+        output[_offset_col][1] = numpy.append(output[_offset_col][1], val)
 
     for i, o in enumerate(output):
         if o is not None:
@@ -236,7 +233,6 @@ def extract_sparse_array_TileDbArraySeed(
         _subset_shape,
         x._dtype,
         _output[3],
-        _output[4],
     )
 
     return SparseNdarray(
