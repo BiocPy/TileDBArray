@@ -165,6 +165,8 @@ def _extract_array(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]):
                 _data[x._dimnames[0]],
                 _data[x._dimnames[1]],
                 _data[x._attribute_name],
+                min(_first_subset),
+                min(_second_subset),
             )
 
         return (len(_first_subset), len(_second_subset)), numpy.array(
@@ -185,26 +187,28 @@ def extract_dense_array_TileDbArraySeed(
     return _output
 
 
-def _SparseNdarray_contents_from_coordinates(rows, cols, vals, shape, val_dtype):
+def _SparseNdarray_contents_from_coordinates(
+    rows, cols, vals, shape, val_dtype, offset_row, offset_col
+):
     output = [None] * shape[-1]
-    _min_col = min(cols)
-    _min_row = min(rows)
     for i, val in enumerate(vals):
-        _offset_col = cols[i] - _min_col
-        _offset_row = rows[i] - _min_row
-        if output[_offset_col] is None:
-            output[_offset_col] = [
+        if output[cols[i] - offset_col] is None:
+            output[cols[i] - offset_col] = [
                 numpy.array([], dtype=numpy.int32),
                 numpy.array([], dtype=val_dtype),
             ]
 
-        output[_offset_col][0] = numpy.append(output[_offset_col][0], _offset_row)
-        output[_offset_col][1] = numpy.append(output[_offset_col][1], val)
+        output[cols[i] - offset_col][0] = numpy.append(
+            output[cols[i] - offset_col][0], rows[i] - offset_row
+        )
+        output[cols[i] - offset_col][1] = numpy.append(
+            output[cols[i] - offset_col][1], val
+        )
 
     for i, o in enumerate(output):
         if o is not None:
             _idx_order = numpy.argsort(o[0])
-            _indices = o[0][_idx_order]
+            _indices = o[0][_idx_order].astype(numpy.int32)
             _vals = o[1][_idx_order]
             output[i] = (_indices, _vals)
 
@@ -226,7 +230,13 @@ def extract_sparse_array_TileDbArraySeed(
     _subset_shape, _output = _extract_array(x, subset)
 
     _content = _SparseNdarray_contents_from_coordinates(
-        _output[0], _output[1], _output[2], _subset_shape, x._dtype
+        _output[0],
+        _output[1],
+        _output[2],
+        _subset_shape,
+        x._dtype,
+        _output[3],
+        _output[4],
     )
 
     return SparseNdarray(

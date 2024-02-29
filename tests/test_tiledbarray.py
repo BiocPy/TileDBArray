@@ -38,8 +38,8 @@ def test_TileDbArraySeed_dense():
 def test_TileDbArraySeed_sparse():
     dir = os.path.join(mkdtemp(), "sparse_array")
     dom = tiledb.Domain(
-        tiledb.Dim(name="rows", domain=(0, 4), tile=5, dtype=np.int32),
-        tiledb.Dim(name="cols", domain=(0, 4), tile=5, dtype=np.int32),
+        tiledb.Dim(name="rows", domain=(0, 4), tile=4, dtype=np.int32),
+        tiledb.Dim(name="cols", domain=(0, 4), tile=4, dtype=np.int32),
     )
     schema = tiledb.ArraySchema(
         domain=dom, sparse=True, attrs=[tiledb.Attr(name="", dtype=np.int32)]
