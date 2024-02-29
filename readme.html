@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>tiledbarray &#8212; tiledbarray 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=89af775e" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
+    <link rel="prev" title="tiledbarray" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <p><a class="reference external" href="https://pyscaffold.org/"><img alt="Project generated with PyScaffold" src="https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold" /></a>
+<a class="reference external" href="https://pypi.org/project/tiledbarray/"><img alt="PyPI-Server" src="https://img.shields.io/pypi/v/tiledbarray.svg" /></a>
+<a class="reference external" href="https://pepy.tech/project/tiledbarray"><img alt="Monthly Downloads" src="https://pepy.tech/badge/tiledbarray/month" /></a>
+<img alt="Unit tests" src="https://github.com/BiocPy/tiledbarray/actions/workflows/pypi-test.yml/badge.svg" /></p>
+<section class="tex2jax_ignore mathjax_ignore" id="tiledbarray">
+<h1>tiledbarray<a class="headerlink" href="#tiledbarray" title="Link to this heading">¶</a></h1>
+<p>This is the Python equivalent of Bioconductor’s <a class="reference external" href="https://bioconductor.org/packages/TileDBArray"><strong>TileDBArray</strong></a> package,
+providing a representation of TileDB-backed arrays within the <a class="reference external" href="https://github.com/BiocPy/delayedarray"><strong>delayedarray</strong></a> framework.
+The idea is to allow users to store, manipulate and operate on large datasets without loading them into memory,
+in a manner that is trivially compatible with other data structures in the <a class="reference external" href="https::/github.com/BiocPy"><strong>BiocPy</strong></a> ecosystem.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<p>This package can be installed from <a class="reference external" href="https://pypi.org/project/tiledbarray/">PyPI</a> with the usual commands:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>tiledbarray
+</pre></div>
+</div>
+</section>
+<section id="quick-start">
+<h2>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
+<p>Let’s mock up a dense array:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+
+<span class="n">tiledb</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="s2">&quot;dense.tiledb&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can now represent it as a <code class="docutils literal notranslate"><span class="pre">TileDbArray</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tiledbarray</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">tiledbarray</span><span class="o">.</span><span class="n">TileDbArray</span><span class="p">(</span><span class="s2">&quot;dense.tiledb&quot;</span><span class="p">,</span> <span class="n">attribute_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="c1"># &lt;40 x 50&gt; TileDbArray object of type &#39;float64&#39;</span>
+<span class="c1"># [[0.96316214, 0.90187013, 0.55767551, ..., 0.81663263, 0.57660051,</span>
+<span class="c1">#   0.3986336 ],</span>
+<span class="c1">#  [0.72578394, 0.06328588, 0.9473141 , ..., 0.89977069, 0.34617884,</span>
+<span class="c1">#   0.09208036],</span>
+<span class="c1">#  [0.87291607, 0.01714908, 0.96570953, ..., 0.28404601, 0.20394673,</span>
+<span class="c1">#   0.6454273 ],</span>
+<span class="c1">#  ...,</span>
+<span class="c1">#  [0.21565857, 0.11721607, 0.45146332, ..., 0.18565937, 0.348599  ,</span>
+<span class="c1">#   0.16050929],</span>
+<span class="c1">#  [0.95061188, 0.71917657, 0.33039149, ..., 0.60267692, 0.28035863,</span>
+<span class="c1">#   0.56416845],</span>
+<span class="c1">#  [0.40462116, 0.61058508, 0.5067807 , ..., 0.64234988, 0.5881812 ,</span>
+<span class="c1">#   0.17138409]]</span>
+</pre></div>
+</div>
+<p>This is just a subclass of a <code class="docutils literal notranslate"><span class="pre">DelayedArray</span></code> and can be used anywhere in the BiocPy framework.
+Parts of the NumPy API are also supported - for example, we could apply a variety of delayed operations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scaling</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">transformed</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">arr</span> <span class="o">/</span> <span class="n">scaling</span><span class="p">)</span>
+<span class="c1"># &lt;40 x 50&gt; DelayedArray object of type &#39;float64&#39;</span>
+<span class="c1"># [[1.29646391, 2.05014167, 0.48661736, ..., 0.90574803, 2.38890685,</span>
+<span class="c1">#   1.1277655 ],</span>
+<span class="c1">#  [1.09916863, 0.38865342, 0.72500505, ..., 0.96463182, 1.93797807,</span>
+<span class="c1">#   0.39371608],</span>
+<span class="c1">#  [1.22596458, 0.12107778, 0.73496894, ..., 0.41384292, 1.50457489,</span>
+<span class="c1">#   1.47747976],</span>
+<span class="c1">#  ...,</span>
+<span class="c1">#  [0.46673182, 0.63114795, 0.41040352, ..., 0.28897665, 1.94394461,</span>
+<span class="c1">#   0.61032586],</span>
+<span class="c1">#  [1.28695229, 1.85595293, 0.31579293, ..., 0.73604123, 1.76033915,</span>
+<span class="c1">#   1.37526146],</span>
+<span class="c1">#  [0.74949037, 1.71968269, 0.45082104, ..., 0.76976215, 2.40698455,</span>
+<span class="c1">#   0.64080734]]</span>
+</pre></div>
+</div>
+<p>Check out the <a class="reference external" href="https://biocpy.github.io/tiledbarray/">documentation</a> for more details.</p>
+</section>
+<section id="sparse-matrices">
+<h2>Sparse Matrices<a class="headerlink" href="#sparse-matrices" title="Link to this heading">¶</a></h2>
+<p>We can perform similar operations on a sparse matrix as well. Lets mock a sparse matrix and store it as a tiledb file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dir_path</span> <span class="o">=</span> <span class="s2">&quot;sparse_array.tiledb&quot;</span>
+<span class="n">dom</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Domain</span><span class="p">(</span>
+     <span class="n">tiledb</span><span class="o">.</span><span class="n">Dim</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;rows&quot;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">tile</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+     <span class="n">tiledb</span><span class="o">.</span><span class="n">Dim</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;cols&quot;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">tile</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">schema</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">ArraySchema</span><span class="p">(</span>
+     <span class="n">domain</span><span class="o">=</span><span class="n">dom</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)]</span>
+<span class="p">)</span>
+<span class="n">tiledb</span><span class="o">.</span><span class="n">SparseArray</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dir_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+
+<span class="n">tdb</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">SparseArray</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dir_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+<span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
+<span class="n">tdb</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>We can now represent this as a <code class="docutils literal notranslate"><span class="pre">TileDbArray</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tiledbarray</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">tiledbarray</span><span class="o">.</span><span class="n">TileDbArray</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">attribute_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<span class="n">slices</span> <span class="o">=</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+
+<span class="kn">import</span> <span class="nn">delayedarray</span>
+<span class="n">subset</span> <span class="o">=</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">extract_sparse_array</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">slices</span><span class="p">,))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">subset</span><span class="p">)</span>
+<span class="c1"># &lt;3 x 2&gt; SparseNdarray object of type &#39;int32&#39;</span>
+<span class="c1"># [[2, 0],</span>
+<span class="c1">#  [0, 0],</span>
+<span class="c1">#  [0, 0]]</span>
+</pre></div>
+</div>
+<p>Check out the <a class="reference external" href="https://biocpy.github.io/delayedarray/">delayedarray</a> for more details.</p>
+<!-- pyscaffold-notes -->
+</section>
+<section id="note">
+<h2>Note<a class="headerlink" href="#note" title="Link to this heading">¶</a></h2>
+<p>This project has been set up using PyScaffold 4.5. For details and usage
+information on PyScaffold see <a class="reference external" href="https://pyscaffold.org/">https://pyscaffold.org/</a>.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">tiledbarray</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sparse-matrices">Sparse Matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#note">Note</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributions &amp; Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">Module Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">tiledbarray</a></li>
+      <li>Next: <a href="contributing.html" title="next chapter">Contributing</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Jayaram Kancherla.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/readme.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,21 @@
+tiledbarray package
+===================
+
+Submodules
+----------
+
+tiledbarray.TileDBArraySeed module
+----------------------------------
+
+.. automodule:: tiledbarray.TileDBArraySeed
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: tiledbarray
+   :members:
+   :undoc-members:
+   :show-inheritance:
