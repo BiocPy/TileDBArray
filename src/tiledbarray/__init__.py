@@ -15,4 +15,4 @@ except PackageNotFoundError:  # pragma: no cover
 finally:
     del version, PackageNotFoundError
 
-from .TileDBArraySeed import TileDbArraySeed
+from .TileDBArraySeed import TileDbArraySeed, TileDbArray
