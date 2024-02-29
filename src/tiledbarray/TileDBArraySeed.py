@@ -287,6 +287,6 @@ class TileDbArray(DelayedArray):
 
 
 @wrap.register
-def wrap_Hdf5CompressedSparseMatrixSeed(x: TileDbArraySeed):
+def wrap_TileDbArraySeed(x: TileDbArraySeed):
     """See :py:meth:`~delayedarray.wrap.wrap`."""
     return TileDbArray(x, None)
