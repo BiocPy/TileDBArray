@@ -112,11 +112,9 @@ class TileDbArraySeed:
 
 @chunk_grid.register
 def chunk_grid_TileDbArraySeed(x: TileDbArraySeed):
-    """
-    See :py:meth:`~delayedarray.chunk_grid.chunk_grid`.
+    """See :py:meth:`~delayedarray.chunk_grid.chunk_grid`.
 
-    The cost factor is set to 20 to reflect the computational work involved in
-    extracting data from disk.
+    The cost factor is set to 20 to reflect the computational work involved in extracting data from disk.
     """
     return chunk_shape_to_grid(x._tiles, x._shape, cost_factor=20)
 
@@ -142,7 +140,7 @@ def _sanitize_subset(subset, dimlength):
     elif isinstance(subset, range):
         subset = list(subset)
 
-    return subset
+    return sorted(subset)
 
 
 def _extract_array(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]):
@@ -241,18 +239,17 @@ def extract_sparse_array_TileDbArraySeed(
 
 
 class TileDbArray(DelayedArray):
-    """Sparse or Dense arrays from TileDB file as a ``DelayedArray``. This
-    subclass allows developers to implement custom methods for tiledb-backed
-    sparse or dense matrices."""
+    """Sparse or Dense arrays from TileDB file as a ``DelayedArray``.
+
+    This subclass allows developers to implement custom methods for tiledb-backed sparse or dense matrices.
+    """
 
     def __init__(
         self,
         path: Union[str, TileDbArraySeed],
         attribute_name: Optional[str],
     ):
-        """
-        To construct a ``TileDbArray`` from an existing
-        :py:class:`~TileDbArraySeed`, use
+        """To construct a ``TileDbArray`` from an existing :py:class:`~TileDbArraySeed`, use
         :py:meth:`~delayedarray.wrap.wrap` instead.
 
         Args:
