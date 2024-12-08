@@ -44,9 +44,7 @@ class TileDbArraySeed:
             _all_attr.append(_schema.attr(i).name)
 
         if self._attribute_name not in _all_attr:
-            raise ValueError(
-                f"Attribute '{self._attribute_name}' not in the tiledb schema."
-            )
+            raise ValueError(f"Attribute '{self._attribute_name}' not in the tiledb schema.")
 
         _attr_schema = _schema.attr(self._attribute_name)
         self._dtype = _attr_schema.dtype
@@ -166,15 +164,11 @@ def _extract_array(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]):
                 _parsed_subset,
             )
 
-        return (len(_first_subset), len(_second_subset)), numpy.array(
-            _data[x._attribute_name]
-        )
+        return (len(_first_subset), len(_second_subset)), numpy.array(_data[x._attribute_name])
 
 
 @extract_dense_array.register
-def extract_dense_array_TileDbArraySeed(
-    x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]
-) -> numpy.ndarray:
+def extract_dense_array_TileDbArraySeed(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]) -> numpy.ndarray:
     """See :py:meth:`~delayedarray.extract_dense_array.extract_dense_array`.
 
     Subset parameter is passed to tiledb's
@@ -184,9 +178,7 @@ def extract_dense_array_TileDbArraySeed(
     return _output
 
 
-def _SparseNdarray_contents_from_coordinates(
-    rows, cols, vals, shape, val_dtype, parsed_subset
-):
+def _SparseNdarray_contents_from_coordinates(rows, cols, vals, shape, val_dtype, parsed_subset):
     output = [None] * shape[-1]
     for i, val in enumerate(vals):
         _offset_col = parsed_subset[1].index(cols[i])
@@ -214,9 +206,7 @@ def _SparseNdarray_contents_from_coordinates(
 
 
 @extract_sparse_array.register
-def extract_sparse_array_TileDbArraySeed(
-    x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]
-) -> SparseNdarray:
+def extract_sparse_array_TileDbArraySeed(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]) -> SparseNdarray:
     """See :py:meth:`~delayedarray.extract_sparse_array.extract_sparse_array`.
 
     Subset parameter is passed to tiledb's
@@ -233,9 +223,7 @@ def extract_sparse_array_TileDbArraySeed(
         _output[3],
     )
 
-    return SparseNdarray(
-        shape=_subset_shape, contents=_content, dtype=x._dtype, index_dtype=numpy.int32
-    )
+    return SparseNdarray(shape=_subset_shape, contents=_content, dtype=x._dtype, index_dtype=numpy.int32)
 
 
 class TileDbArray(DelayedArray):
