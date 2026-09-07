@@ -25,6 +25,7 @@ Let's mock up a dense array:
 
 ```python
 import numpy
+
 data = numpy.random.rand(40, 50)
 
 tiledb.from_numpy("dense.tiledb", data)
@@ -34,6 +35,7 @@ We can now represent it as a `TileDbArray`:
 
 ```python
 import tiledbarray
+
 arr = tiledbarray.TileDbArray("dense.tiledb", attribute_name="")
 # <40 x 50> TileDbArray object of type 'float64'
 # [[0.96316214, 0.90187013, 0.55767551, ..., 0.81663263, 0.57660051,
@@ -82,12 +84,10 @@ We can perform similar operations on a sparse matrix as well. Lets mock a sparse
 ```python
 dir_path = "sparse_array.tiledb"
 dom = tiledb.Domain(
-     tiledb.Dim(name="rows", domain=(0, 4), tile=5, dtype=np.int32),
-     tiledb.Dim(name="cols", domain=(0, 4), tile=5, dtype=np.int32),
+    tiledb.Dim(name="rows", domain=(0, 4), tile=5, dtype=np.int32),
+    tiledb.Dim(name="cols", domain=(0, 4), tile=5, dtype=np.int32),
 )
-schema = tiledb.ArraySchema(
-     domain=dom, sparse=True, attrs=[tiledb.Attr(name="", dtype=np.int32)]
-)
+schema = tiledb.ArraySchema(domain=dom, sparse=True, attrs=[tiledb.Attr(name="", dtype=np.int32)])
 tiledb.SparseArray.create(f"{dir_path}", schema)
 
 tdb = tiledb.SparseArray(f"{dir_path}", mode="w")
@@ -100,11 +100,13 @@ We can now represent this as a `TileDbArray`:
 
 ```python
 import tiledbarray
+
 arr = tiledbarray.TileDbArray(dir_path, attribute_name="")
 
-slices = (slice(0,3), [2, 4])
+slices = (slice(0, 3), [2, 4])
 
 import delayedarray
+
 subset = delayedarray.extract_sparse_array(arr, (*slices,))
 print(subset)
 # <3 x 2> SparseNdarray object of type 'int32'

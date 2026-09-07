@@ -1,4 +1,4 @@
-from typing import List, Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import numpy
 import tiledb
@@ -68,7 +68,7 @@ class TileDbArraySeed:
         return self._dtype
 
     @property
-    def shape(self) -> Tuple[int, ...]:
+    def shape(self) -> tuple[int, ...]:
         """
         Returns:
             Tuple containing the dimensions of this array.
@@ -100,7 +100,7 @@ class TileDbArraySeed:
         return self._is_sparse
 
     @property
-    def dimnames(self) -> List[str]:
+    def dimnames(self) -> list[str]:
         """
         Returns:
             Names of each dimension of the matrix.
@@ -141,7 +141,7 @@ def _sanitize_subset(subset, dimlength):
     return sorted(subset)
 
 
-def _extract_array(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]):
+def _extract_array(x: TileDbArraySeed, subset: tuple[Sequence[int], ...]):
     """Extract slices from a TileDB Array."""
     _parsed_subset = []
 
@@ -168,7 +168,7 @@ def _extract_array(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]):
 
 
 @extract_dense_array.register
-def extract_dense_array_TileDbArraySeed(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]) -> numpy.ndarray:
+def extract_dense_array_TileDbArraySeed(x: TileDbArraySeed, subset: tuple[Sequence[int], ...]) -> numpy.ndarray:
     """See :py:meth:`~delayedarray.extract_dense_array.extract_dense_array`.
 
     Subset parameter is passed to tiledb's
@@ -206,7 +206,7 @@ def _SparseNdarray_contents_from_coordinates(rows, cols, vals, shape, val_dtype,
 
 
 @extract_sparse_array.register
-def extract_sparse_array_TileDbArraySeed(x: TileDbArraySeed, subset: Tuple[Sequence[int], ...]) -> SparseNdarray:
+def extract_sparse_array_TileDbArraySeed(x: TileDbArraySeed, subset: tuple[Sequence[int], ...]) -> SparseNdarray:
     """See :py:meth:`~delayedarray.extract_sparse_array.extract_sparse_array`.
 
     Subset parameter is passed to tiledb's
@@ -234,8 +234,8 @@ class TileDbArray(DelayedArray):
 
     def __init__(
         self,
-        path: Union[str, TileDbArraySeed],
-        attribute_name: Optional[str],
+        path: str | TileDbArraySeed,
+        attribute_name: str | None,
     ):
         """To construct a ``TileDbArray`` from an existing :py:class:`~TileDbArraySeed`, use
         :py:meth:`~delayedarray.wrap.wrap` instead.
@@ -255,7 +255,7 @@ class TileDbArray(DelayedArray):
 
             seed = TileDbArraySeed(path, attribute_name)
 
-        super(TileDbArray, self).__init__(seed)
+        super().__init__(seed)
 
     @property
     def path(self) -> str:
@@ -266,7 +266,7 @@ class TileDbArray(DelayedArray):
         return self.seed.path
 
     @property
-    def attribute_name(self) -> Optional[str]:
+    def attribute_name(self) -> str | None:
         """
         Returns:
             Name of the TileDB attribute containing the matrix contents.
